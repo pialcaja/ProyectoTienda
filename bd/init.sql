@@ -1,0 +1,75 @@
+CREATE DATABASE IF NOT EXISTS bd_carrito;
+USE bd_carrito;
+
+CREATE TABLE tb_usuario (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    pwd VARCHAR(250) NOT NULL,
+    fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fechaActualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE tb_categoria (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) UNIQUE NOT NULL,
+    descripcion VARCHAR(250) DEFAULT 'Sin descripción',
+    estado BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE tb_producto (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(250) DEFAULT 'Sin descripción',
+    precio DECIMAL(10,2) NOT NULL,
+    stock INT NOT NULL DEFAULT 0,
+    imagenUrl VARCHAR(250) DEFAULT NULL,
+    categoriaId BIGINT NOT NULL,
+    fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fechaActualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    estado BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (categoriaId) REFERENCES tb_categoria (id) ON DELETE RESTRICT
+);
+
+CREATE TABLE tb_carrito (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuarioId BIGINT UNIQUE NOT NULL,
+    fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fechaActualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuarioId) REFERENCES tb_usuario (id)
+);
+
+CREATE TABLE tb_item_carrito (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    carritoId BIGINT NOT NULL,
+    productoId BIGINT NOT NULL,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    precioUnitario DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (carritoId) REFERENCES tb_carrito (id) ON DELETE CASCADE,
+    FOREIGN KEY (productoId) REFERENCES tb_producto (id),
+    UNIQUE KEY unique_producto_carrito (carritoId, productoId)
+);
+
+CREATE TABLE tb_orden (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuarioId BIGINT NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    estado ENUM('PENDIENTE','PAGADO','COMPLETADO','CANCELADO') DEFAULT 'PENDIENTE',
+    fechaOrden DATETIME DEFAULT CURRENT_TIMESTAMP,
+    metodoPago ENUM('MERCADOPAGO','TRANSFERENCIA','YAPE/PLIN') DEFAULT 'MERCADOPAGO',
+    direccionEnvio VARCHAR(250) NOT NULL,
+    FOREIGN KEY (usuarioId) REFERENCES tb_usuario (id) ON DELETE RESTRICT
+);
+
+CREATE TABLE tb_item_orden (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ordenId BIGINT NOT NULL,
+    productoId BIGINT NOT NULL,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    precioUnitario DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (ordenId) REFERENCES tb_orden (id) ON DELETE RESTRICT,
+    FOREIGN KEY (productoId) REFERENCES tb_producto (id) ON DELETE RESTRICT
+);

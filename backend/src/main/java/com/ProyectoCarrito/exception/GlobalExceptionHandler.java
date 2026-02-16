@@ -1,12 +1,18 @@
 package com.ProyectoCarrito.exception;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-// MANEJADOR GLOBAL DE EXCEPCIONES
+// MANEJADOR GLOBAL DE EXCEPCIONES - CAPTURA TODAS LAS EXCEPCIONES DE LA APP
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -54,4 +60,57 @@ public class GlobalExceptionHandler {
 		
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
 	}
-}
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<Map<String, Object>> handleValidationErrors(
+			MethodArgumentNotValidException ex,
+			WebRequest request) {
+		
+		Map<String, Object> errors = new HashMap<>();
+		
+		ex.getBindingResult().getAllErrors().forEach((error) -> {
+			String fieldName = ((FieldError) error).getField();
+			String errorMessage = error.getDefaultMessage();
+			errors.put(fieldName, errorMessage);
+		});
+		
+		Map<String, Object> response = new HashMap<>();
+		response.put("timestamp", LocalDateTime.now());
+		response.put("status", HttpStatus.BAD_REQUEST.value());
+		response.put("error", "Validation Failed");
+		response.put("errors", errors);
+		response.put("path", request.getDescription(false).replace("uri=", ""));
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	}
+	
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ErrorResponse> handleIllegalArgument(
+			IllegalArgumentException ex,
+			WebRequest request) {
+		
+		ErrorResponse error = new ErrorResponse(
+				HttpStatus.BAD_REQUEST.value(),
+				"Bad Request",
+				ex.getMessage(),
+				request.getDescription(false).replace("uri=", "")
+		);
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+	}
+	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponse> handleGlobalException(
+			Exception ex,
+			WebRequest request) {
+		
+		ErrorResponse error = new ErrorResponse(
+				HttpStatus.INTERNAL_SERVER_ERROR.value(),
+				"Internal Server Error",
+				"Ocurrió un error inesperado. Por favor contacte al administrador",
+				request.getDescription(false).replace("uri=", "")
+		);
+		
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+	}
+ }

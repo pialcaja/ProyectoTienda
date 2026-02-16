@@ -1,7 +1,7 @@
-🎯 Plan de Construcción del Backend
-Fase 1: Configuración Base
+Plan de Construcción del Backend
+Fase 1: Configuración Base ✅
 
-✅ Dependencias (ya las tienes definidas)
+Dependencias (ya las tienes definidas)
 Configurar application.properties
 Configurar ModelMapper (bean)
 Probar que la app arranca

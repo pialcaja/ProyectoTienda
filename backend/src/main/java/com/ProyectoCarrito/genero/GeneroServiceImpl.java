@@ -27,7 +27,7 @@ public class GeneroServiceImpl implements GeneroService {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public Genero buscar(Long id) {
+	public Genero obtenerPorId(Long id) {
 		// BUSCAR EL GENERO POR ID
 		Genero genero = generoRepo.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Registro de género", "id", id));

@@ -6,7 +6,7 @@ public interface GeneroService {
 
 	public List<Genero> listar();
 	
-	public Genero buscar(Long id);
+	public Genero obtenerPorId(Long id);
 	
 	public Genero crear(GeneroRequestDTO dto);
 	

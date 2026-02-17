@@ -1,4 +1,4 @@
-package com.ProyectoCarrito.categoria;
+package com.ProyectoCarrito.genero;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,22 +11,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "tb_categoria")
+@Table(name = "tb_genero")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Categoria {
+public class Genero {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "nombre", nullable = false)
+	@Column(name = "nombre", unique = true, nullable = false)
 	private String nombre;
-	
-	@Column(name = "descripcion")
-	private String descripcion;
-	
-	@Column(name = "estado")
-	private Boolean estado = true;
 }

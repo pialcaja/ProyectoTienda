@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ProyectoCarrito.exception.ConflictException;
 import com.ProyectoCarrito.exception.ResourceNotFoundException;
+import com.ProyectoCarrito.videojuego.VideojuegoRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class GeneroServiceImpl implements GeneroService {
 	
 	private final GeneroRepository generoRepo;
+	private final VideojuegoRepository videojuegoRepo;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -78,9 +80,9 @@ public class GeneroServiceImpl implements GeneroService {
 				.orElseThrow(() -> new ResourceNotFoundException("Registro de género", "id", id));
 		
 		// VALIDAR QUE EL GENERO NO TENGA VIDEOJUEGOS ASOCIADOS
-//		if (videojuegoRepo.existsByGenerosContaining(genero)) {
-//			throw new ConflictException("No se puede eliminar, hay videojuegos con este género");
-//		}
+		if (videojuegoRepo.existsByGenerosContaining(genero)) {
+			throw new ConflictException("No se puede eliminar, hay videojuegos con este género");
+		}
 		
 		generoRepo.delete(genero);
 	}

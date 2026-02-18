@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ProyectoCarrito.exception.ConflictException;
 import com.ProyectoCarrito.exception.ResourceNotFoundException;
+import com.ProyectoCarrito.videojuego.VideojuegoRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class PlataformaServiceImpl implements PlataformaService {
 	
 	private final PlataformaRepository plataformaRepo;
+	private final VideojuegoRepository videojuegoRepo;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -72,9 +74,9 @@ public class PlataformaServiceImpl implements PlataformaService {
 				.orElseThrow(() -> new ResourceNotFoundException("Registro de plataforma", "id", id));
 		
 		// VALIDAR QUE LA PLATAFORMA NO TENGA VIDEOJUEGOS ASOCIADOS
-//		if (videojuegoRepo.existsByPlataformasContaining(plataforma)) {
-//			throw new ConflictException("No se puede eliminar, hay videojuegos con esta plataforma");
-//		}
+		if (videojuegoRepo.existsByPlataformasContaining(plataforma)) {
+			throw new ConflictException("No se puede eliminar, hay videojuegos con esta plataforma");
+		}
 		
 		plataformaRepo.delete(plataforma);
 	}

@@ -16,6 +16,7 @@ import org.springframework.web.context.request.WebRequest;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+	// MANEJA ERROR 404
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleResourceNotFound(
 			ResourceNotFoundException ex,
@@ -31,6 +32,7 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
 	}
 	
+	// MANEJA ERROR 400
 	@ExceptionHandler(BadRequestException.class)
 	public ResponseEntity<ErrorResponse> handleBadRequest(
 			BadRequestException ex,
@@ -46,6 +48,7 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 	}
 	
+	// MANEJA ERROR 409
 	@ExceptionHandler(ConflictException.class)
 	public ResponseEntity<ErrorResponse> handleConflict(
 			ConflictException ex,
@@ -61,24 +64,31 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
 	}
 	
+	// MANEJA ERRORES DE VALIDACION
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Map<String, Object>> handleValidationErrors(
 			MethodArgumentNotValidException ex,
 			WebRequest request) {
 		
 		Map<String, Object> errors = new HashMap<>();
+		String firstErrorMessage = null;
 		
-		ex.getBindingResult().getAllErrors().forEach((error) -> {
+		for (var error : ex.getBindingResult().getAllErrors()) {
 			String fieldName = ((FieldError) error).getField();
 			String errorMessage = error.getDefaultMessage();
+			
 			errors.put(fieldName, errorMessage);
-		});
+			
+			if (firstErrorMessage == null) {
+				firstErrorMessage = errorMessage;
+			}
+		}
 		
 		Map<String, Object> response = new HashMap<>();
 		response.put("timestamp", LocalDateTime.now());
 		response.put("status", HttpStatus.BAD_REQUEST.value());
 		response.put("error", "Validation Failed");
-		response.put("errors", errors);
+		response.put("message", firstErrorMessage);
 		response.put("path", request.getDescription(false).replace("uri=", ""));
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
@@ -99,6 +109,7 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 	}
 	
+	// MANEJA ERROR 500
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleGlobalException(
 			Exception ex,

@@ -116,3 +116,7 @@ CREATE TABLE tb_item_orden (
     FOREIGN KEY (ordenId) REFERENCES tb_orden (id) ON DELETE RESTRICT,
     FOREIGN KEY (productoId) REFERENCES tb_producto (id) ON DELETE RESTRICT
 );
+
+INSERT INTO tb_rol (nombre, descripcion) 
+VALUES ('ADMIN', 'Administrador de la aplicación'),
+		('CLIENTE', 'Cliente de la aplicación');

@@ -1,9 +1,8 @@
-package com.ProyectoCarrito.producto;
+package com.ProyectoCarrito.usuario;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.ProyectoCarrito.categoria.Categoria;
+import com.ProyectoCarrito.rol.Rol;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,11 +20,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name ="tb_producto")
+@Table(name = "tb_usuario")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Producto {
+public class Usuario {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,30 +33,24 @@ public class Producto {
 	@Column(name = "nombre", nullable = false)
 	private String nombre;
 
-	@Column(name = "descripcion")
-	private String descripcion;
+	@Column(name = "email", unique = true, nullable = false)
+	private String email;
 
-	@Column(name = "precio", nullable = false)
-	private BigDecimal precio;
-
-	@Column(name = "stock", nullable = false)
-	private Integer stock;
-
-	@Column(name = "imagenUrl")
-	private String imagenUrl;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "categoriaId", nullable = false)
-	private Categoria categoria;
+	@Column(name = "pwd", nullable = false)
+	private String pwd;
 
 	@Column(name = "fechaRegistro", updatable = false)
 	private LocalDateTime fechaRegistro;
 
-	@Column(name = "fechaActualizacion")
+	@Column(name = "fechaActualizacion", nullable = false)
 	private LocalDateTime fechaActualizacion;
 
 	@Column(name = "estado")
 	private Boolean estado = true;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "rolId", nullable = false)
+	private Rol rol;
 	
 	@PrePersist
 	protected void onCreate() {

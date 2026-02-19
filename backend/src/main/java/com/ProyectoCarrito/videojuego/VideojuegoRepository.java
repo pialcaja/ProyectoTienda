@@ -24,7 +24,7 @@ public interface VideojuegoRepository extends JpaRepository<Videojuego, Long> {
             "AND (:generoId IS NULL OR g.id = :generoId) " +
             "AND (:plataformaId IS NULL OR pl.id = :plataformaId) " +
             "AND (:nombre IS NULL OR LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%')))")
-	Page<Videojuego> buscarConFiltro(
+	public Page<Videojuego> buscarConFiltro(
 			@Param("estado") Boolean estado,
 			@Param("generoId") Long generoId,
 			@Param("plataformaId") Long plataformaId,
@@ -38,7 +38,7 @@ public interface VideojuegoRepository extends JpaRepository<Videojuego, Long> {
             "LEFT JOIN v.generos " +
             "LEFT JOIN v.plataformas " +
             "WHERE v.id = :id")
-	Optional<Videojuego> buscarPorId(@Param("id") Long id);
+    public Optional<Videojuego> buscarPorId(@Param("id") Long id);
 	
     @Query("SELECT v FROM Videojuego v " +
             "LEFT JOIN v.producto p " +
@@ -46,9 +46,9 @@ public interface VideojuegoRepository extends JpaRepository<Videojuego, Long> {
             "LEFT JOIN v.generos " +
             "LEFT JOIN v.plataformas " +
             "WHERE v.id = :id AND p.estado = true")
-	Optional<Videojuego> buscarPorIdActivo(@Param("id") Long id);
+    public Optional<Videojuego> buscarPorIdActivo(@Param("id") Long id);
     
-    Boolean existsByGenerosContaining(Genero genero);
+    public Boolean existsByGenerosContaining(Genero genero);
     
-    Boolean existsByPlataformasContaining(Plataforma plataforma);
+    public Boolean existsByPlataformasContaining(Plataforma plataforma);
 }

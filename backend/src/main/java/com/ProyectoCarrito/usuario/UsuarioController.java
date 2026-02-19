@@ -1,4 +1,4 @@
-package com.ProyectoCarrito.videojuego;
+package com.ProyectoCarrito.usuario;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,74 +22,72 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("/api/videojuegos")
+@RequestMapping("/api/usuarios")
 @RequiredArgsConstructor
-public class VideojuegoController {
+public class UsuarioController {
 
-	public final VideojuegoService service;
+	private final UsuarioService service;
 	
 	@GetMapping
 	public ResponseEntity<Map<String, Object>> listar(
+			@RequestParam(required = false) String filtro,
 			@RequestParam(defaultValue = "true") Boolean estado,
-			@RequestParam(required = false) Long generoId,
-			@RequestParam(required = false) Long plataformaId,
-			@RequestParam(required = false) String nombre,
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size,
 			@RequestParam(defaultValue = "nombre") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortDir) {
 		
 		Map<String, Object> response = new HashMap<>();
-		Page<VideojuegoResponseDTO> videojuegosPage = service.listarConFiltros(
-				estado, generoId, plataformaId, nombre, page, size, sortBy, sortDir);
+		Page<UsuarioResponseDTO> usuarios = service.listarPorFiltro(
+				filtro, estado, page, size, sortBy, sortDir);
 		
-		response.put("message", videojuegosPage.getContent().isEmpty() ?
+		response.put("message", usuarios.getContent().isEmpty() ?
 				"No se encontraron registros con los filtros ingresados" :
-				"Videojuegos encontrados");
-		response.put("videojuegos", videojuegosPage.getContent());
-		response.put("paginaActual", videojuegosPage.getNumber());
-		response.put("totalItems", videojuegosPage.getTotalElements());
-		response.put("totalPaginas", videojuegosPage.getTotalPages());
+				"Usuarios encontrados");
+		response.put("usuarios", usuarios.getContent());
+		response.put("paginaActual", usuarios.getNumber());
+		response.put("totalItems", usuarios.getTotalElements());
+		response.put("totalPaginas", usuarios.getTotalPages());
 		
 		return ResponseEntity.ok(response);
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> obtenerPorId(
-			@PathVariable Long id,
-			@RequestParam(defaultValue = "true") Boolean soloActivos) {
+			@PathVariable Long id) {
 		
 		Map<String, Object> response = new HashMap<>();
-		VideojuegoResponseDTO videojuego = service.obtenerPorId(id, soloActivos);
+		Usuario usuario = service.obtenerPorId(id);
 		
-		response.put("message", "Videojuego encontrado");
-		response.put("videojuego", videojuego);
+		response.put("message", "Usuario encontrado");
+		response.put("usuario", usuario);
 		
 		return ResponseEntity.ok(response);
 	}
+	
 	@PostMapping
 	public ResponseEntity<Map<String, Object>> crear(
-			@Valid @RequestBody VideojuegoRequestDTO dto) {
+			@Valid @RequestBody UsuarioRequestDTO dto) {
 		
 		Map<String, Object> response = new HashMap<>();
-		VideojuegoResponseDTO videojuego = service.crear(dto);
+		UsuarioResponseDTO usuario = service.crear(dto);
 		
-		response.put("message", "Videojuego registrado correctamente");
-		response.put("videojuego", videojuego);
+		response.put("message", "Usuario registrado correctamente");
+		response.put("usuario", usuario);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Map<String, Object>> crear(
+	public ResponseEntity<Map<String, Object>> actualizar(
 			@PathVariable Long id, 
-			@RequestBody VideojuegoRequestDTO dto) {
+			@Valid @RequestBody UsuarioRequestDTO dto) {
 		
 		Map<String, Object> response = new HashMap<>();
-		VideojuegoResponseDTO videojuego = service.actualizar(id, dto);
+		UsuarioResponseDTO usuario = service.actualizar(id, dto);
 		
-		response.put("message", "Videojuego actualizado correctamente");
-		response.put("videojuego", videojuego);
+		response.put("message", "Usuario actualizado correctamente");
+		response.put("usuario", usuario);
 		
 		return ResponseEntity.ok(response);
 	}
@@ -101,7 +99,7 @@ public class VideojuegoController {
 		Map<String, Object> response = new HashMap<>();
 		service.eliminar(id);
 		
-		response.put("message", "Videojuego eliminado correctamente");
+		response.put("message", "Usuario eliminado correctamente");
 		
 		return ResponseEntity.ok(response);
 	}
@@ -113,7 +111,7 @@ public class VideojuegoController {
 		Map<String, Object> response = new HashMap<>();
 		service.recuperar(id);
 		
-		response.put("message", "Videojuego recuperado correctamente");
+		response.put("message", "Usuario recuperado correctamente");
 		
 		return ResponseEntity.ok(response);
 	}

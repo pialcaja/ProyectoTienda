@@ -11,9 +11,9 @@ E-commerce de videojuegos desarrollado con Spring Boot y Angular.
 - Java 17
 
 **Frontend:**
-- Angular 17
+- Angular 21
 - TypeScript
-- Tailwind CSS
+- CSS
 
 ## 🏗️ Arquitectura
 ```

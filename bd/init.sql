@@ -101,7 +101,7 @@ CREATE TABLE tb_orden (
     total DECIMAL(10,2) NOT NULL,
     estado ENUM('PENDIENTE','PAGADO','COMPLETADO','CANCELADO') DEFAULT 'PENDIENTE',
     fechaOrden DATETIME DEFAULT CURRENT_TIMESTAMP,
-    metodoPago ENUM('MERCADOPAGO','TRANSFERENCIA','YAPE/PLIN') DEFAULT 'MERCADOPAGO',
+    metodoPago ENUM('MERCADOPAGO','TRANSFERENCIA','YAPE_PLIN') DEFAULT 'MERCADOPAGO',
     direccionEnvio VARCHAR(250) NOT NULL,
     FOREIGN KEY (usuarioId) REFERENCES tb_usuario (id) ON DELETE RESTRICT
 );
@@ -120,3 +120,6 @@ CREATE TABLE tb_item_orden (
 INSERT INTO tb_rol (nombre, descripcion) 
 VALUES ('ADMIN', 'Administrador de la aplicación'),
 		('CLIENTE', 'Cliente de la aplicación');
+   
+INSERT INTO tb_usuario (nombre, email, pwd, rolId) 
+VALUES ('Piero', 'admin@ejemplo.com', '$2a$10$VtKtSaxlTChDjvREAWTjiu2nV2qBmIJCzWXbAVU1tgcmIRYodQN0C', 1); -- pwd = 'Piero123@'
